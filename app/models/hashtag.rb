@@ -1,5 +1,4 @@
 class Hashtag < ApplicationRecord
-
   extend Statable::ClassMethods
   include Statable::InstanceMethods
 

@@ -8,6 +8,6 @@ class Mention < ApplicationRecord
   has_many :tweet_mentions
   has_many :tweets, :through => :tweet_mentions
 
-  alias_attribute :text, :user 
+  alias_attribute :user, :text 
 
 end

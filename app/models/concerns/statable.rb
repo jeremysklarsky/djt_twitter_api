@@ -8,7 +8,7 @@ module Statable
         relation = relation.where.not(word: MostUsed.words) 
       end
 
-      relation.group(:text).count.sort_by {|k,v| v}.reverse.first(limit).to_h
+      relation.sort_by_count(limit)
     end
 
     def top_by_year(year, limit=10)
@@ -18,8 +18,16 @@ module Statable
     end
 
     def top_by_time_period(date1, date2, limit=10)
-      self.by_time_period(date1, date2).group(:text).count.sort_by {|k,v| v}.reverse.first(limit).to_h
-    end    
+      self.by_time_period(date1, date2).sort_by_count(limit)
+    end
+
+    def top_by_time_of_day_range(start, finish, limit=10)
+      self.by_time_range(start, finish).sort_by_count(limit)
+    end
+
+    def sort_by_count(limit)
+      self.group(:text).count.sort_by {|k,v| v}.reverse.first(limit).to_h
+    end
   end
 
   module InstanceMethods

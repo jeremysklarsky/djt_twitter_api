@@ -4,30 +4,29 @@ class TweetsController < ApplicationController
   # GET /tweets
   def index
 
-    if params[:mention]
-      @tweets = Tweet.by_mention(params[:mention])
-    elsif params[:word]
-      @tweets = Tweet.by_word(params[:word])
-    elsif params[:hashtag]
-      @tweets = Tweet.by_hashtag(params[:hashtag])
-    elsif params[:phrase]
-      @tweets = Tweet.by_phrase(params[:phrase])
-    else
-      @tweets = Tweet.all
-    end
+    @tweets = Tweet.where(nil) if !filtering_params(params).empty?
 
-    if params[:year]
-      @tweets = @tweets.by_year(params[:year].to_i)
-    elsif params[:between]
+    # e.g. @tweets = @tweets.by_mention(params[:mention]) if params[:mention].present?
+    filtering_params(params).each do |key, value|
+      @tweets = @tweets.public_send("by_" + key, value) if value.present?
+    end    
+
+    if params[:between].present?
       dates = Dates.split_dates(params[:between])
       @tweets = @tweets.by_time_period(dates.first, dates.last) 
     end
-    
-    if params[:text]
-      @tweets = @tweets.select{|t| t.text.include?(params[:text])}
-    end
 
-    render json: @tweets
+    if filtering_params(params).empty?
+      render json: {
+        status:"400",
+        error: "Bad Request. Tweets cannot be loaded without at least one filtering option " +
+               "(e.g. /tweets&mention=BarackObama)"}
+    else
+      render json: {
+        count: @tweets.size,
+        tweets: @tweets
+      }
+    end
   end
 
   # GET /tweets/1
@@ -45,4 +44,8 @@ class TweetsController < ApplicationController
     def tweet_params
       params.fetch(:tweet, {})
     end
+
+    def filtering_params(params)
+      params.slice(:mention, :word, :hashtag, :phrase, :text, :year)
+    end    
 end

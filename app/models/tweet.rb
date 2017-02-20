@@ -10,47 +10,40 @@ class Tweet < ApplicationRecord
   has_many :tweet_words
   has_many :words, :through => :tweet_words
 
+  attr_accessor :favorites, :retweets 
 
-  def self.by_year(year)
-    self.select {|tweet| tweet.created_at.year == year}
-  end
+  ## class method scopes
+  #  Resources
+  scope :by_resource,   -> (resource, text) { joins(resource.to_sym).where(resource + '.text LIKE ?', text) }
+  scope :by_hashtag,    -> (hashtag)        { by_resource('hashtags', hashtag) }
+  scope :by_word,       -> (word)           { by_resource('words', word) }
+  scope :by_mention,    -> (mention)        { by_resource('mentions', mention) }
+  scope :by_phrase,     -> (phrase)         { where("text like ?", "%" + phrase + "%") }
+  scope :by_text,       -> (text)           { 
+    terms = text.split(',')
+    search_string = [(['text LIKE ?'] * terms.length).join(' AND ')] + terms.map {|name| "%#{name}%" }
+    where(search_string)
+  }
 
-  def self.by_time_period(date1, date2)
-    start = date1 > date2 ? date2 : date1
-    finish = date1 > date2 ? date1 : date2
-    self.where(created_at: start..finish)
-  end
+  #  Time Ranges
+  scope :by_year,           -> (year)           { select {|tweet| tweet.created_at.year == year.to_i} }
+  scope :time_of_day_range, -> (start, finish)  { where("strftime('%H', created_at) BETWEEN strftime('%H', #{start}) AND strftime('%H', #{finish})") }
+  scope :before,            -> (date)           { where("created_at < ?", date) }
+  scope :after,             -> (date)           { where("created_at > ?", date) }
+  scope :on,                -> (date)           { by_time_period(date, date + 1) }
+  scope :by_time_period,    -> (date1, date2)   { where(created_at: date1..date2) }
 
-  def self.before(date)
-    self.where("created_at < ?", date)
-  end
-
-  def self.after(date)
-    self.where("created_at > ?", date)
-  end
-
-  def self.on(date)
-    self.by_time_period(date, date + 1)
-  end
-
+  ## Instance Methods
   def year
     self.created_at.year
   end
 
-  def self.by_phrase(phrase)
-    self.where("text like ?", "%" + phrase + "%")
+  def details
+    # Fetches individual tweet details from Twitter API.
+    TWITTER.status(self.id_str).to_h
   end
 
-  def self.by_mention(mention)
-    Mention.find_by(:user=> mention).tweets
+  def hour
+    self.created_at.hour
   end
-
-  def self.by_hashtag(hashtag)
-    Hashtag.find_by(:text=> hashtag).tweets
-  end
-
-  def self.by_word(word)
-    Word.find_by(:word=> word).tweets
-  end
-
 end

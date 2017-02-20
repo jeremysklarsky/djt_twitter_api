@@ -2,11 +2,9 @@ module Filterable
 
   module ClassMethods
     def by_time_period(date1, date2)
-      start = date1 > date2 ? date2 : date1
-      finish = date1 > date2 ? date1 : date2
+      self.joins(:tweets).where("tweets.created_at BETWEEN \'" + date1.strftime("%F") + "\' AND \'" + date2.strftime("%F") + "\'")
+    end
 
-      self.joins(:tweets).where("tweets.created_at BETWEEN \'" + start.strftime("%F") + "\' AND \'" + finish.strftime("%F") + "\'")
-    end    
   end
 
   module InstanceMethods
@@ -15,9 +13,7 @@ module Filterable
     end    
 
     def by_time_period(date1, date2)
-      start = date1 > date2 ? date2 : date1
-      finish = date1 > date2 ? date1 : date2    
-      self.tweets.where(:created_at => start..finish)
-    end    
+      self.tweets.where(:created_at => date1..date2)
+    end
   end
 end

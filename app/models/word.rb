@@ -1,5 +1,4 @@
 class Word < ApplicationRecord
-
   extend Statable::ClassMethods
   include Statable::InstanceMethods
 
@@ -12,15 +11,14 @@ class Word < ApplicationRecord
   has_many :source_words
   has_many :sources, :through => :source_words
 
-  alias_attribute :text, :word  
+  alias_attribute :word, :text  
 
   # Module Method Overrides
 
   def self.by_time_period(date1, date2)
     # invoking super defers to Filterable class method "by_time_period", and returns all words from a given time period
     # we then filter down from the MostUsed words list
-    words = super
-    words.where.not(word: MostUsed.words)
+    super.where.not(word: MostUsed.words)
   end  
 
 end

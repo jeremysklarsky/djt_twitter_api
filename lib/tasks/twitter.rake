@@ -45,7 +45,7 @@ namespace :twitter do
         end
       end
     end
-    puts  "Added " + count.to_s + "new tweets."
+    puts  "Added " + count.to_s + " new tweets."
   end
 
   desc "test"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170210152137) do
+ActiveRecord::Schema.define(version: 20170219193810) do
 
   create_table "hashtags", force: :cascade do |t|
     t.string   "text"
@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 20170210152137) do
   create_table "mentions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string   "user"
+    t.string   "text"
   end
 
   create_table "source_tweets", id: false, force: :cascade do |t|
@@ -78,7 +78,7 @@ ActiveRecord::Schema.define(version: 20170210152137) do
   create_table "words", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string   "word"
+    t.string   "text"
   end
 
   create_table "years", force: :cascade do |t|
