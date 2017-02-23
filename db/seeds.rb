@@ -27,12 +27,12 @@ years.each do |year|
   end
 end
 
-tweets.sort_by {|k,v| k[ "created_at"].to_datetime.strftime}.each do |tweet|
+tweets.sort_by {|k,v| k[ "tweeted_at"].to_datetime.strftime}.each do |tweet|
   source = Source.find_or_create_by(:name => tweet["source"])
   tweet["source"] = source
   tweet = Tweet.new(
     {:text => tweet["text"],
-    :created_at => tweet["created_at"],
+    :tweeted_at => tweet["tweeted_at"],
     :is_retweet => tweet["is_retweet"],
     :id_str => tweet["id_str"]}
   )

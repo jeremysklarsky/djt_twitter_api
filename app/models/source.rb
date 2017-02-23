@@ -7,7 +7,7 @@ class Source < ApplicationRecord
   def by_time_period(date1, date2)
     start = date1 > date2 ? date2 : date1
     finish = date1 > date2 ? date1 : date2    
-    self.tweets.where(:created_at => start..finish)
+    self.tweets.where(:tweeted_at => start..finish)
   end
 
   def top_words

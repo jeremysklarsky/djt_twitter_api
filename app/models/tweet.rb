@@ -10,8 +10,6 @@ class Tweet < ApplicationRecord
   has_many :tweet_words
   has_many :words, :through => :tweet_words
 
-  attr_accessor :favorites, :retweets 
-
   ## class method scopes
   #  Resources
   scope :by_resource,   -> (resource, text) { joins(resource.to_sym).where(resource + '.text LIKE ?', text) }
@@ -26,16 +24,16 @@ class Tweet < ApplicationRecord
   }
 
   #  Time Ranges
-  scope :by_year,           -> (year)           { select {|tweet| tweet.created_at.year == year.to_i} }
-  scope :time_of_day_range, -> (start, finish)  { where("strftime('%H', created_at) BETWEEN strftime('%H', #{start}) AND strftime('%H', #{finish})") }
-  scope :before,            -> (date)           { where("created_at < ?", date) }
-  scope :after,             -> (date)           { where("created_at > ?", date) }
+  scope :by_year,           -> (year)           { where( ENV['cast'] + "(strftime('%Y', tweeted_at) as int) = ?", year) }
+  scope :time_of_day_range, -> (start, finish)  { where("strftime('%H', tweeted_at) BETWEEN strftime('%H', #{start}) AND strftime('%H', #{finish})") }
+  scope :before,            -> (date)           { where("tweeted_at < ?", date) }
+  scope :after,             -> (date)           { where("tweeted_at > ?", date) }
   scope :on,                -> (date)           { by_time_period(date, date + 1) }
-  scope :by_time_period,    -> (date1, date2)   { where(created_at: date1..date2) }
+  scope :by_time_period,    -> (date1, date2)   { where(tweeted_at: date1..date2) }
 
   ## Instance Methods
   def year
-    self.created_at.year
+    self.tweeted_at.year
   end
 
   def details
@@ -44,6 +42,6 @@ class Tweet < ApplicationRecord
   end
 
   def hour
-    self.created_at.hour
+    self.tweeted_at.hour
   end
 end

@@ -7,12 +7,12 @@ namespace :twitter do
       if !Tweet.find_by(:id_str => tweet.id.to_s)
         count += 1
         text = tweet.text
-        created_at = tweet.created_at.to_datetime
+        tweeted_at = tweet.created_at.to_datetime
         id_str = tweet.id.to_s
         source_id = Source.find_by(:name => Nokogiri::HTML(tweets.first.source).text).id
         @tweet = Tweet.create({
           :text => text,
-          :created_at => created_at,
+          :tweeted_at => tweeted_at,
           :id_str => id_str,
           :source_id => source_id
         })
@@ -29,8 +29,8 @@ namespace :twitter do
         # words
         tweet.text.split.map {|word| word.gsub(/\W+/, '').downcase}.each do |word|
           word_obj = Word.find_or_create_by(:word => word)
-          TweetWord.create(:tweet => @tweet, :word => word_obj, :year => @tweet.created_at.year)
-          SourceWord.create(:source => @tweet.source, :word => word_obj, :year => @tweet.created_at.year)
+          TweetWord.create(:tweet => @tweet, :word => word_obj, :year => @tweet.tweeted_at.year)
+          SourceWord.create(:source => @tweet.source, :word => word_obj, :year => @tweet.tweeted_at.year)
         end
 
         # mentions
