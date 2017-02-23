@@ -21,4 +21,10 @@ class Word < ApplicationRecord
     super.where.not(word: MostUsed.words)
   end  
 
+  def self.by_time_range(start,finish)
+    # invoking super defers to Filterable class method "by_time_range", and returns all words from a given time period
+    # we then filter down from the MostUsed words list    
+    super.where.not(word: MostUsed.words)
+  end
+
 end

@@ -5,6 +5,11 @@ module Filterable
       self.joins(:tweets).where("tweets.tweeted_at BETWEEN \'" + date1.strftime("%F") + "\' AND \'" + date2.strftime("%F") + "\'")
     end
 
+    def by_time_range(start,finish)
+      self.joins(:tweets)
+          .where(ENV['cast'] + "(strftime('%H', tweets.tweeted_at) as int) >= ? AND " +
+                 ENV['cast'] + "(strftime('%H', tweets.tweeted_at) as int) < ?", start, finish)
+    end
   end
 
   module InstanceMethods

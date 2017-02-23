@@ -24,12 +24,14 @@ class Tweet < ApplicationRecord
   }
 
   #  Time Ranges
+  scope :by_time_period,    -> (date1, date2)   { where(tweeted_at: date1..date2) }
   scope :by_year,           -> (year)           { where( ENV['cast'] + "(strftime('%Y', tweeted_at) as int) = ?", year) }
-  scope :time_of_day_range, -> (start, finish)  { where("strftime('%H', tweeted_at) BETWEEN strftime('%H', #{start}) AND strftime('%H', #{finish})") }
+  scope :by_time_of_day,    -> (start, finish)  {
+    where( ENV['cast'] + "(strftime('%H', tweeted_at) as int) >= ? AND " + ENV['cast'] + "(strftime('%H', tweeted_at) as int) < ?", start, finish)
+  }
   scope :before,            -> (date)           { where("tweeted_at < ?", date) }
   scope :after,             -> (date)           { where("tweeted_at > ?", date) }
   scope :on,                -> (date)           { by_time_period(date, date + 1) }
-  scope :by_time_period,    -> (date1, date2)   { where(tweeted_at: date1..date2) }
 
   ## Instance Methods
   def year
