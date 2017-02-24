@@ -33,6 +33,15 @@ class Tweet < ApplicationRecord
   scope :after,             -> (date)           { where("tweeted_at > ?", date) }
   scope :on,                -> (date)           { by_time_period(date, date + 1) }
 
+  # Top By
+  def self.count_by_time(time)
+    group("strftime('#{Dates.convert(time)}', tweeted_at) ").count
+  end
+
+  def self.top_by_time(time, limit=10)
+    self.count_by_time(time).sort_by {|k,v| v}.reverse.first(limit).to_h
+  end
+
   ## Instance Methods
   def year
     self.tweeted_at.year

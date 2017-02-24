@@ -2,13 +2,13 @@ module Statable
 
   module ClassMethods
     def top(limit=10)
-      relation = self.joins(:tweets)
+      scope = self.joins(:tweets)
 
       if self == Word
-        relation = relation.where.not(word: MostUsed.words) 
+        scope = scope.where.not(word: MostUsed.words) 
       end
 
-      relation.sort_by_count(limit)
+      scope.sort_by_count(limit)
     end
 
     def top_by_year(year, limit=10)

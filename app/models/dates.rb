@@ -26,4 +26,18 @@ class Dates
     dates.split(",").collect{|date| self.clean(date)}
   end
 
+  def self.convert(time)
+    case time.downcase
+    when "year"
+      '%Y'
+    when "month"
+      '%Y-%m'
+    when "date"
+      '%Y-%m-%d'
+    when "hour"
+      '%H'
+    end
+
+  end
+
 end
