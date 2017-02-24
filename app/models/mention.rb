@@ -5,6 +5,8 @@ class Mention < ApplicationRecord
   extend Filterable::ClassMethods
   include Filterable::InstanceMethods
 
+  extend Searchable::ClassMethods
+
   has_many :tweet_mentions
   has_many :tweets, :through => :tweet_mentions
 

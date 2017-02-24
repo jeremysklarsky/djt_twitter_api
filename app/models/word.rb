@@ -5,6 +5,8 @@ class Word < ApplicationRecord
   extend Filterable::ClassMethods
   include Filterable::InstanceMethods
 
+  extend Searchable::ClassMethods
+
   has_many :tweet_words
   has_many :tweets, :through => :tweet_words
 

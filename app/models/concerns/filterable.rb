@@ -14,11 +14,19 @@ module Filterable
 
   module InstanceMethods
     def by_year(year)
-      self.tweets.select {|tweet| tweet.tweeted_at.year == year}
+      self.tweets.by_year(year)
     end    
 
     def by_time_period(date1, date2)
-      self.tweets.where(:tweeted_at => date1..date2)
+      self.tweets.by_time_period(date1, date2)
+    end
+
+    def count_by_year(year)
+      self.by_year.count
+    end
+
+    def count_by_time_period(date1,date2)
+      self.by_time_period(date1,date2).count
     end
   end
 end
