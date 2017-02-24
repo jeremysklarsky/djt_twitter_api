@@ -42,6 +42,10 @@ class Tweet < ApplicationRecord
     self.count_by_time(time).sort_by {|k,v| v}.reverse.first(limit).to_h
   end
 
+  def self.most_popular(limit=10)
+    TWITTER.search("from:realDonaldTrump", result_type: "popular").take(limit).collect {|tweet|Tweet.find_by(:id_str => tweet.id)}.compact
+  end
+
   ## Instance Methods
   def year
     self.tweeted_at.year
